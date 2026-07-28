@@ -1,7 +1,9 @@
-import React from 'react';
-import { Layers, GitFork, Share2, Flame } from 'lucide-react';
+import React, { useState } from 'react';
+import { Layers, GitFork, Share2, Flame, Menu, X } from 'lucide-react';
 
 export function NavBar({ activeTab, setActiveTab, sheetStats }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   const tabs = [
     {
       id: 'dp',
@@ -26,16 +28,31 @@ export function NavBar({ activeTab, setActiveTab, sheetStats }) {
     }
   ];
 
+  const handleSelectTab = (tabId) => {
+    setActiveTab(tabId);
+    setMobileOpen(false);
+  };
+
   return (
     <nav className="top-navbar">
-      <div className="nav-brand">
-        <div className="brand-icon-wrap">
-          <Flame size={20} className="brand-icon" />
+      <div className="nav-header-row">
+        <div className="nav-brand">
+          <div className="brand-icon-wrap">
+            <Flame size={20} className="brand-icon" />
+          </div>
+          <span className="brand-title">Nahi Kar Paoge</span>
         </div>
-        <span className="brand-title">Nahi Kar Paoge</span>
+
+        <button
+          className="mobile-menu-toggle"
+          onClick={() => setMobileOpen(!mobileOpen)}
+          aria-label="Toggle navigation menu"
+        >
+          {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+        </button>
       </div>
 
-      <div className="nav-tabs">
+      <div className={`nav-tabs ${mobileOpen ? 'mobile-open' : ''}`}>
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -45,7 +62,7 @@ export function NavBar({ activeTab, setActiveTab, sheetStats }) {
             <button
               key={tab.id}
               className={`nav-tab-btn ${isActive ? 'active' : ''}`}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => handleSelectTab(tab.id)}
             >
               <Icon size={16} />
               <span className="tab-label">{tab.shortLabel}</span>

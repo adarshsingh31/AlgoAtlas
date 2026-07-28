@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { DP_CATEGORIES, titleFromSlug } from './data/dpData';
 import { TREE_CATEGORIES } from './data/treeData';
@@ -13,6 +13,12 @@ import { CategoryAccordion } from './components/CategoryAccordion';
 export default function App() {
   // Navigation active tab: 'dp' | 'tree' | 'graph'
   const [activeTab, setActiveTab] = useState('dp');
+
+  // Apply theme class to body for full-page gradient
+  useEffect(() => {
+    document.body.classList.remove('theme-dp', 'theme-tree', 'theme-graph');
+    document.body.classList.add(`theme-${activeTab}`);
+  }, [activeTab]);
 
   // Independent LocalStorage states for each sheet
   const [dpChecked, setDpChecked] = useLocalStorage('dp_sheet_solved_v1', {});
@@ -167,7 +173,7 @@ export default function App() {
         sheetStats={sheetStats}
       />
 
-      <div className="wrap">
+      <div className="wrap" data-theme={activeTab}>
         <Header
           activeTab={activeTab}
           onExpandAll={handleExpandAll}

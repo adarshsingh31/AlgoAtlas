@@ -4,19 +4,19 @@ import { Layers, GitFork, Share2, RotateCcw, ChevronDown, ChevronUp, Database } 
 const SHEET_INFO = {
   dp: {
     eyebrow: "Category-Wise DP Problem Sheet",
-    title: "Nahi Kar Paoge — Dynamic Programming",
+    title: "Dynamic Programming",
     subtitle: "Curated DP problems from the LeetCode discuss list, grouped by pattern instead of difficulty — so you drill one recurrence idea at a time. Progress auto-saves to browser storage.",
     icon: Layers
   },
   tree: {
     eyebrow: "Binary Trees & BST Problem Sheet",
-    title: "Nahi Kar Paoge — Binary Trees & BST",
+    title: "Binary Trees & BST",
     subtitle: "Essential Tree patterns covering traversals, BST operations, tree construction, view problems, and path algorithms. Progress auto-saves to browser storage.",
     icon: GitFork
   },
   graph: {
     eyebrow: "Graph Algorithms Problem Sheet",
-    title: "Nahi Kar Paoge — Graph Algorithms",
+    title: "Graph Algorithms",
     subtitle: "Comprehensive graph problem sheet categorized by BFS/DFS, Shortest Path, Union-Find (DSU), Topological Sort, Graph Coloring, MST, and Connectivity. Progress auto-saves to browser storage.",
     icon: Share2
   }
