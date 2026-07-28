@@ -1,47 +1,73 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { useLocalStorage } from './hooks/useLocalStorage';
-import { DP_CATEGORIES, titleFromSlug } from './data/dpData';
-import { TREE_CATEGORIES } from './data/treeData';
-import { GRAPH_CATEGORIES } from './data/graphData';
+import React, { useState, useMemo, useEffect } from "react";
+import { useLocalStorage } from "./hooks/useLocalStorage";
+import { DP_CATEGORIES, titleFromSlug } from "./data/dpData";
+import { TREE_CATEGORIES } from "./data/treeData";
+import { GRAPH_CATEGORIES } from "./data/graphData";
 
-import { NavBar } from './components/NavBar';
-import { Header } from './components/Header';
-import { StatsCard } from './components/StatsCard';
-import { Controls } from './components/Controls';
-import { CategoryAccordion } from './components/CategoryAccordion';
+import { NavBar } from "./components/NavBar";
+import { Header } from "./components/Header";
+import { StatsCard } from "./components/StatsCard";
+import { Controls } from "./components/Controls";
+import { CategoryAccordion } from "./components/CategoryAccordion";
 
 export default function App() {
   // Navigation active tab: 'dp' | 'tree' | 'graph'
-  const [activeTab, setActiveTab] = useState('dp');
+  const [activeTab, setActiveTab] = useState("dp");
 
   // Apply theme class to body for full-page gradient
   useEffect(() => {
-    document.body.classList.remove('theme-dp', 'theme-tree', 'theme-graph');
+    document.body.classList.remove("theme-dp", "theme-tree", "theme-graph");
     document.body.classList.add(`theme-${activeTab}`);
   }, [activeTab]);
 
   // Independent LocalStorage states for each sheet
-  const [dpChecked, setDpChecked] = useLocalStorage('dp_sheet_solved_v1', {});
-  const [treeChecked, setTreeChecked] = useLocalStorage('tree_sheet_solved_v1', {});
-  const [graphChecked, setGraphChecked] = useLocalStorage('graph_sheet_solved_v1', {});
+  const [dpChecked, setDpChecked] = useLocalStorage("dp_sheet_solved_v1", {});
+  const [treeChecked, setTreeChecked] = useLocalStorage(
+    "tree_sheet_solved_v1",
+    {},
+  );
+  const [graphChecked, setGraphChecked] = useLocalStorage(
+    "graph_sheet_solved_v1",
+    {},
+  );
 
   // Search & filter states
-  const [search, setSearch] = useState('');
-  const [diffFilter, setDiffFilter] = useState('ALL');
+  const [search, setSearch] = useState("");
+  const [diffFilter, setDiffFilter] = useState("ALL");
 
   // Open categories state
   const [openCategories, setOpenCategories] = useState(() => new Set([0]));
 
   // Get current active sheet categories & state setters
   const { categories, checkedState, setCheckedState } = useMemo(() => {
-    if (activeTab === 'tree') {
-      return { categories: TREE_CATEGORIES, checkedState: treeChecked, setCheckedState: setTreeChecked };
+    if (activeTab === "tree") {
+      return {
+        categories: TREE_CATEGORIES,
+        checkedState: treeChecked,
+        setCheckedState: setTreeChecked,
+      };
     }
-    if (activeTab === 'graph') {
-      return { categories: GRAPH_CATEGORIES, checkedState: graphChecked, setCheckedState: setGraphChecked };
+    if (activeTab === "graph") {
+      return {
+        categories: GRAPH_CATEGORIES,
+        checkedState: graphChecked,
+        setCheckedState: setGraphChecked,
+      };
     }
-    return { categories: DP_CATEGORIES, checkedState: dpChecked, setCheckedState: setDpChecked };
-  }, [activeTab, dpChecked, treeChecked, graphChecked, setDpChecked, setTreeChecked, setGraphChecked]);
+    return {
+      categories: DP_CATEGORIES,
+      checkedState: dpChecked,
+      setCheckedState: setDpChecked,
+    };
+  }, [
+    activeTab,
+    dpChecked,
+    treeChecked,
+    graphChecked,
+    setDpChecked,
+    setTreeChecked,
+    setGraphChecked,
+  ]);
 
   // Helper helper to calculate total and done for any sheet
   const calculateSheetTotals = (cats, checkedMap) => {
@@ -61,7 +87,7 @@ export default function App() {
     return {
       dp: calculateSheetTotals(DP_CATEGORIES, dpChecked),
       tree: calculateSheetTotals(TREE_CATEGORIES, treeChecked),
-      graph: calculateSheetTotals(GRAPH_CATEGORIES, graphChecked)
+      graph: calculateSheetTotals(GRAPH_CATEGORIES, graphChecked),
     };
   }, [dpChecked, treeChecked, graphChecked]);
 
@@ -112,7 +138,7 @@ export default function App() {
     const stats = {
       E: { done: 0, total: 0 },
       M: { done: 0, total: 0 },
-      H: { done: 0, total: 0 }
+      H: { done: 0, total: 0 },
     };
 
     categories.forEach((cat) => {
@@ -129,35 +155,41 @@ export default function App() {
     return stats;
   }, [categories, checkedState]);
 
-  const totalSolved = statsByDiff.E.done + statsByDiff.M.done + statsByDiff.H.done;
+  const totalSolved =
+    statsByDiff.E.done + statsByDiff.M.done + statsByDiff.H.done;
 
   // Filter categories and problems by search and difficulty
   const processedCategories = useMemo(() => {
     const cleanSearch = search.trim().toLowerCase();
 
-    return categories.map((category, catIndex) => {
-      const filteredProblems = category.problems.filter(([slug, diff]) => {
-        if (diffFilter !== 'ALL' && diff !== diffFilter) return false;
-        if (cleanSearch) {
-          const title = titleFromSlug(slug).toLowerCase();
-          if (!title.includes(cleanSearch) && !slug.toLowerCase().includes(cleanSearch)) {
-            return false;
+    return categories
+      .map((category, catIndex) => {
+        const filteredProblems = category.problems.filter(([slug, diff]) => {
+          if (diffFilter !== "ALL" && diff !== diffFilter) return false;
+          if (cleanSearch) {
+            const title = titleFromSlug(slug).toLowerCase();
+            if (
+              !title.includes(cleanSearch) &&
+              !slug.toLowerCase().includes(cleanSearch)
+            ) {
+              return false;
+            }
           }
+          return true;
+        });
+
+        return {
+          category,
+          catIndex,
+          filteredProblems,
+        };
+      })
+      .filter(({ filteredProblems }) => {
+        if ((search || diffFilter !== "ALL") && filteredProblems.length === 0) {
+          return false;
         }
         return true;
       });
-
-      return {
-        category,
-        catIndex,
-        filteredProblems
-      };
-    }).filter(({ filteredProblems }) => {
-      if ((search || diffFilter !== 'ALL') && filteredProblems.length === 0) {
-        return false;
-      }
-      return true;
-    });
   }, [categories, search, diffFilter]);
 
   return (
@@ -166,8 +198,8 @@ export default function App() {
         activeTab={activeTab}
         setActiveTab={(tab) => {
           setActiveTab(tab);
-          setSearch('');
-          setDiffFilter('ALL');
+          setSearch("");
+          setDiffFilter("ALL");
           setOpenCategories(new Set([0]));
         }}
         sheetStats={sheetStats}
@@ -194,30 +226,39 @@ export default function App() {
         <div className="category-list">
           {processedCategories.length === 0 ? (
             <div className="empty-msg">
-              No problems match your current search "{search}" or difficulty filter "{diffFilter}".
+              No problems match your current search "{search}" or difficulty
+              filter "{diffFilter}".
             </div>
           ) : (
-            processedCategories.map(({ category, catIndex, filteredProblems }) => {
-              const isOpen = search.trim().length > 0 ? true : openCategories.has(catIndex);
+            processedCategories.map(
+              ({ category, catIndex, filteredProblems }) => {
+                const isOpen =
+                  search.trim().length > 0
+                    ? true
+                    : openCategories.has(catIndex);
 
-              return (
-                <CategoryAccordion
-                  key={category.name}
-                  category={category}
-                  catIndex={catIndex}
-                  isOpen={isOpen}
-                  onToggleOpen={() => handleToggleCategory(catIndex)}
-                  filteredProblems={filteredProblems}
-                  checkedState={checkedState}
-                  onToggleProblem={handleToggleProblem}
-                />
-              );
-            })
+                return (
+                  <CategoryAccordion
+                    key={category.name}
+                    category={category}
+                    catIndex={catIndex}
+                    isOpen={isOpen}
+                    onToggleOpen={() => handleToggleCategory(catIndex)}
+                    filteredProblems={filteredProblems}
+                    checkedState={checkedState}
+                    onToggleProblem={handleToggleProblem}
+                  />
+                );
+              },
+            )
           )}
         </div>
 
         <footer className="footer-note">
-          Difficulty tags are approximate — verify on the LeetCode problem page if needed for tracking. Progress is saved independently in browser storage for each sheet topic.
+          If you came across this shit... then you are probably a fucked up
+          Engineering Student
+          <br />
+          ft:Phoenix and Gaydarsh
         </footer>
       </div>
     </>
