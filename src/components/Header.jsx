@@ -63,10 +63,7 @@ export function Header({ activeTab, onExpandAll, onCollapseAll, onResetProgress,
           <span>Reset Progress</span>
         </button>
 
-        <div className="storage-badge" title="State stored independently in browser localStorage">
-          <Database size={12} />
-          <span>Browser Storage Active</span>
-        </div>
+         
       </div>
     </header>
   );
