@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>DP Sheet — Dynamic Programming, Category-Wise</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --bg: #14171c;
+    --panel: #1b1f27;
+    --panel-hover: #212633;
+    --line: #2a2f3b;
+    --line-soft: #232833;
+    --text: #e7e9ee;
+    --text-dim: #8b91a1;
+    --text-faint: #565c6b;
+    --accent: #8b9dff;
+    --accent-dim: #4d5a99;
+    --easy: #6fcf97;
+    --medium: #e8b44c;
+    --hard: #e2685c;
+    --radius: 10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:28px 18px 80px;
+  }
+  .wrap{max-width:880px;margin:0 auto;}
+
+  /* Header */
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);margin-bottom:8px;
+  }
+  h1{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:30px;font-weight:700;margin:0 0 6px;letter-spacing:-.01em;
+  }
+  .sub{color:var(--text-dim);font-size:14.5px;line-height:1.55;margin:0 0 22px;max-width:640px;}
+
+  /* Stats row */
+  .stats{
+    display:flex;gap:22px;align-items:center;margin-bottom:22px;flex-wrap:wrap;
+    padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  }
+  .donut-wrap{position:relative;width:104px;height:104px;flex-shrink:0;}
+  .donut-wrap svg{transform:rotate(-90deg);}
+  .donut-seg{transition:stroke-dasharray .4s ease;}
+  .donut-center{
+    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  }
+  .donut-center b{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--text);line-height:1;}
+  .donut-center small{font-size:10px;color:var(--text-faint);letter-spacing:.05em;text-transform:uppercase;margin-top:3px;}
+
+  .legend{display:flex;flex-direction:column;gap:8px;flex:1;min-width:150px;}
+  .legend-row{display:flex;align-items:center;gap:9px;font-size:12.5px;}
+  .legend-swatch{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
+  .legend-label{color:var(--text-dim);flex:1;}
+  .legend-count{font-family:'JetBrains Mono',monospace;color:var(--text);font-weight:600;}
+
+
+  /* Controls */
+  .controls{
+    display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;
+  }
+  input[type="text"]{
+    flex:1;min-width:180px;background:var(--panel);border:1px solid var(--line);
+    color:var(--text);padding:9px 12px;border-radius:8px;font-size:13.5px;font-family:'Inter',sans-serif;
+    outline:none;
+  }
+  input[type="text"]::placeholder{color:var(--text-faint);}
+  input[type="text"]:focus{border-color:var(--accent-dim);}
+  .diff-filter{display:flex;gap:6px;}
+  .chip{
+    font-family:'JetBrains Mono',monospace;font-size:11.5px;padding:8px 12px;border-radius:8px;
+    background:var(--panel);border:1px solid var(--line);color:var(--text-dim);cursor:pointer;
+    user-select:none;transition:all .15s;
+  }
+  .chip.active{background:var(--accent);border-color:var(--accent);color:#10121a;font-weight:600;}
+  .chip:hover:not(.active){border-color:var(--accent-dim);color:var(--text);}
+
+  /* Category card */
+  .category{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    margin-bottom:10px;overflow:hidden;
+  }
+  .cat-header{
+    display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;user-select:none;
+  }
+  .cat-header:hover{background:var(--panel-hover);}
+  .cat-index{
+    font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);
+    background:rgba(139,157,255,.1);border:1px solid var(--accent-dim);
+    padding:2px 7px;border-radius:5px;flex-shrink:0;
+  }
+  .cat-name{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;flex:1;}
+  .cat-count{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--text-dim);flex-shrink:0;}
+  .cat-bar{width:60px;height:5px;background:var(--line-soft);border-radius:4px;overflow:hidden;flex-shrink:0;}
+  .cat-bar i{display:block;height:100%;background:var(--accent);}
+  .chevron{
+    font-size:11px;color:var(--text-faint);transition:transform .2s;flex-shrink:0;width:14px;text-align:center;
+  }
+  .category.open .chevron{transform:rotate(90deg);}
+
+  .cat-body{display:none;border-top:1px solid var(--line);}
+  .category.open .cat-body{display:block;}
+
+  .row{
+    display:flex;align-items:center;gap:12px;padding:10px 16px;
+    border-bottom:1px solid var(--line-soft);
+  }
+  .row:last-child{border-bottom:none;}
+  .row:hover{background:var(--panel-hover);}
+  .row.done .title{color:var(--text-faint);text-decoration:line-through;text-decoration-color:var(--text-faint);}
+
+  .checkbox{
+    width:18px;height:18px;border-radius:5px;border:1.5px solid var(--line);
+    flex-shrink:0;cursor:pointer;position:relative;background:var(--bg);
+  }
+  .checkbox.checked{background:var(--accent);border-color:var(--accent);}
+  .checkbox.checked::after{
+    content:'';position:absolute;left:5px;top:1px;width:5px;height:9px;
+    border:solid #10121a;border-width:0 2px 2px 0;transform:rotate(45deg);
+  }
+  .title{
+    flex:1;font-size:13.8px;color:var(--text);text-decoration:none;
+  }
+  .title:hover{color:var(--accent);}
+  .tag{
+    font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;
+    padding:2px 7px;border-radius:5px;flex-shrink:0;letter-spacing:.02em;
+  }
+  .tag.E{color:var(--easy);background:rgba(111,207,151,.12);}
+  .tag.M{color:var(--medium);background:rgba(232,180,76,.12);}
+  .tag.H{color:var(--hard);background:rgba(226,104,92,.12);}
+
+  .empty-msg{padding:30px;text-align:center;color:var(--text-faint);font-size:13.5px;}
+
+  .footer-note{
+    margin-top:26px;font-size:12px;color:var(--text-faint);line-height:1.6;text-align:center;
+  }
+
+  ::-webkit-scrollbar{width:8px;}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Category-Wise Problem Sheet</div>
+  <h1>Dynamic Programming — DP Sheet</h1>
+  <p class="sub">Curated DP problems from the LeetCode discuss list, grouped by pattern instead of difficulty — so you drill one recurrence idea at a time. Check off problems as you solve them; progress saves automatically to your account.</p>
+
+  <div class="stats">
+    <div class="donut-wrap">
+      <svg width="104" height="104" viewBox="0 0 104 104">
+        <circle cx="52" cy="52" r="44" fill="none" stroke="var(--line-soft)" stroke-width="12"/>
+        <circle class="donut-seg" id="segEasy"   cx="52" cy="52" r="44" fill="none" stroke="var(--easy)"   stroke-width="12" stroke-dasharray="0 276.5" stroke-dashoffset="0"/>
+        <circle class="donut-seg" id="segMedium" cx="52" cy="52" r="44" fill="none" stroke="var(--medium)" stroke-width="12" stroke-dasharray="0 276.5" stroke-dashoffset="0"/>
+        <circle class="donut-seg" id="segHard"   cx="52" cy="52" r="44" fill="none" stroke="var(--hard)"   stroke-width="12" stroke-dasharray="0 276.5" stroke-dashoffset="0"/>
+      </svg>
+      <div class="donut-center"><b id="donutPct">0%</b><small>solved</small></div>
+    </div>
+    <div class="legend" id="legend"></div>
+  </div>
+
+
+  <div class="controls">
+    <input type="text" id="search" placeholder="Search problems…">
+    <div class="diff-filter" id="diffFilter">
+      <div class="chip active" data-diff="ALL">ALL</div>
+      <div class="chip" data-diff="E">EASY</div>
+      <div class="chip" data-diff="M">MEDIUM</div>
+      <div class="chip" data-diff="H">HARD</div>
+    </div>
+  </div>
+
+  <div id="categories"></div>
+  <div class="footer-note">Difficulty tags are approximate (compiled from general knowledge, not live-fetched) — verify on the problem page if it matters for your tracking. Progress is private to your account.</div>
+</div>
+
+<script>
+const DATA = [
+["Linear DP",[["climbing-stairs","E"],["best-time-to-buy-and-sell-stock","E"],["min-cost-climbing-stairs","E"],["divisor-game","E"],["decode-ways","M"],["unique-binary-search-trees","M"],["house-robber","M"],["perfect-squares","M"],["best-time-to-buy-and-sell-stock-with-cooldown","M"],["coin-change","M"],["counting-bits","E"],["integer-break","M"],["count-numbers-with-unique-digits","M"],["wiggle-subsequence","M"],["partition-equal-subset-sum","M"],["maximum-length-of-pair-chain","M"],["best-time-to-buy-and-sell-stock-with-transaction-fee","M"],["delete-and-earn","M"],["domino-and-tromino-tiling","M"],["knight-dialer","M"],["minimum-cost-for-tickets","M"],["partition-array-for-maximum-sum","M"],["filling-bookcase-shelves","M"],["longest-arithmetic-subsequence-of-given-difference","M"],["greatest-sum-divisible-by-three","M"],["best-time-to-buy-and-sell-stock-iii","H"],["student-attendance-record-ii","H"],["decode-ways-ii","H"],["triples-with-bitwise-and-equal-to-zero","M"],["maximum-profit-in-job-scheduling","H"],["minimum-number-of-taps-to-open-to-water-a-garden","H"],["count-all-valid-pickup-and-delivery-options","H"],["stone-game-iii","H"],["restore-the-array","H"],["form-largest-integer-with-digits-that-add-up-to-target","M"],["stone-game-iv","H"],["coin-change-2","M"],["paint-house","M"]]],
+["Knapsack",[["house-robber-ii","M"],["ones-and-zeroes","M"],["target-sum","M"],["shopping-offers","M"],["2-keys-keyboard","M"],["minimum-swaps-to-make-sequences-increasing","M"],["best-team-with-no-conflicts","M"],["profitable-schemes","H"],["tallest-billboard","H"],["pizza-with-3n-slices","H"],["reducing-dishes","H"],["painting-the-walls","H"]]],
+["Multi-Dimensional DP",[["triangle","M"],["combination-sum-iv","M"],["out-of-boundary-paths","M"],["knight-probability-in-chessboard","M"],["champagne-tower","M"],["largest-sum-of-averages","M"],["minimum-falling-path-sum","M"],["video-stitching","M"],["longest-arithmetic-subsequence","M"],["stone-game-ii","M"],["number-of-dice-rolls-with-target-sum","M"],["dice-roll-simulation","M"],["number-of-sets-of-k-non-overlapping-line-segments","M"],["best-time-to-buy-and-sell-stock-iv","H"],["create-maximum-number","H"],["frog-jump","H"],["split-array-largest-sum","H"],["freedom-trail","H"],["minimum-number-of-refueling-stops","H"],["number-of-music-playlists","H"],["count-vowels-permutation","H"],["minimum-falling-path-sum-ii","H"],["minimum-distance-to-type-a-word-using-two-fingers","H"],["minimum-difficulty-of-a-job-schedule","H"],["number-of-ways-to-paint-n-3-grid","H"],["build-array-where-you-can-find-the-maximum-exactly-k-comparisons","H"],["number-of-ways-of-cutting-a-pizza","H"],["paint-house-iii","H"],["count-all-possible-routes","H"]]],
+["Interval DP",[["guess-number-higher-or-lower-ii","M"],["arithmetic-slices","M"],["predict-the-winner","M"],["palindromic-substrings","M"],["stone-game","M"],["minimum-score-triangulation-of-polygon","M"],["last-stone-weight-ii","M"],["minimum-cost-tree-from-leaf-values","M"],["stone-game-vii","M"],["burst-balloons","H"],["remove-boxes","H"],["strange-printer","H"],["valid-permutations-for-di-sequence","H"],["minimum-cost-to-merge-stones","H"],["allocate-mailboxes","H"],["minimum-cost-to-cut-a-stick","H"],["stone-game-v","H"]]],
+["Bitmask DP",[["can-i-win","M"],["partition-to-k-equal-sum-subsets","M"],["stickers-to-spell-word","H"],["shortest-path-visiting-all-nodes","H"],["smallest-sufficient-team","H"],["maximum-students-taking-exam","H"],["number-of-ways-to-wear-different-hats-to-each-other","H"],["minimum-cost-to-connect-two-groups-of-points","H"],["maximum-number-of-achievable-transfer-requests","H"],["distribute-repeating-integers","H"],["maximize-grid-happiness","H"],["find-minimum-time-to-finish-all-jobs","H"]]],
+["Digit DP",[["non-negative-integers-without-consecutive-ones","H"],["numbers-at-most-n-given-digit-set","H"],["numbers-with-repeated-digits","H"]]],
+["DP on Trees",[["unique-binary-search-trees-ii","M"],["house-robber-iii","M"],["maximum-product-of-splitted-binary-tree","M"],["linked-list-in-binary-tree","M"],["longest-zigzag-path-in-a-binary-tree","M"],["binary-tree-cameras","H"],["maximum-sum-bst-in-binary-tree","H"],["number-of-ways-to-reorder-array-to-get-same-bst","H"]]],
+["String DP",[["is-subsequence","E"],["palindrome-partitioning","M"],["palindrome-partitioning-ii","H"],["word-break","M"],["unique-substrings-in-wraparound-string","M"],["minimum-ascii-delete-sum-for-two-strings","M"],["longest-string-chain","M"],["longest-happy-string","M"],["longest-valid-parentheses","H"],["distinct-subsequences","H"],["word-break-ii","H"],["count-the-repetitions","H"],["concatenated-words","H"],["count-different-palindromic-subsequences","H"],["distinct-subsequences-ii","H"],["longest-chunked-palindrome-decomposition","H"],["palindrome-partitioning-iii","H"],["find-all-good-strings","H"],["string-compression-ii","H"],["number-of-ways-to-form-a-target-string-given-a-dictionary","H"]]],
+["Probability DP",[["soup-servings","M"],["new-21-game","M"],["airplane-seat-assignment-probability","M"]]],
+["Classic DP — Kadane's Algorithm",[["maximum-subarray","M"],["maximum-product-subarray","M"],["bitwise-ors-of-subarrays","M"],["longest-turbulent-subarray","M"],["maximum-subarray-sum-with-one-deletion","M"],["k-concatenation-maximum-sum","M"],["largest-divisible-subset","M"],["length-of-longest-fibonacci-subsequence","M"],["gas-station","M"]]],
+["Classic DP — LCS Family",[["longest-palindromic-substring","M"],["longest-palindromic-subsequence","M"],["maximum-length-of-repeated-subarray","M"],["longest-common-subsequence","M"],["regular-expression-matching","H"],["wildcard-matching","H"],["edit-distance","H"],["interleaving-string","M"],["shortest-common-supersequence","H"],["minimum-insertion-steps-to-make-a-string-palindrome","H"],["max-dot-product-of-two-subsequences","H"]]],
+["Classic DP — LIS Family",[["longest-increasing-subsequence","M"],["number-of-longest-increasing-subsequence","M"],["russian-doll-envelopes","H"],["delete-columns-to-make-sorted-iii","H"],["minimum-number-of-removals-to-make-mountain-array","H"],["maximum-height-by-stacking-cuboids","H"],["make-array-strictly-increasing","H"]]],
+["Classic DP — 2D Grid Traversal",[["unique-paths","M"],["unique-paths-ii","M"],["minimum-path-sum","M"],["maximum-non-negative-product-in-a-matrix","M"],["where-will-the-ball-fall","M"],["dungeon-game","H"],["cherry-pickup","H"],["number-of-paths-with-max-score","H"],["cherry-pickup-ii","H"],["kth-smallest-instructions","H"]]],
+["Classic DP — Cumulative Sum",[["range-sum-query-immutable","E"],["maximal-square","M"],["range-sum-query-2d-immutable","M"],["largest-plus-sign","M"],["push-dominoes","M"],["largest-1-bordered-square","M"],["count-square-submatrices-with-all-ones","M"],["matrix-block-sum","M"],["maximum-points-you-can-obtain-from-cards","M"],["count-submatrices-with-all-ones","H"],["ways-to-make-a-fair-array","M"],["maximal-rectangle","H"],["max-sum-of-rectangle-no-larger-than-k","H"],["super-washing-machines","H"],["maximum-sum-of-3-non-overlapping-subarrays","H"],["number-of-submatrices-that-sum-to-target","H"],["get-the-maximum-score","H"]]],
+["Classic DP — Hashmap (Subarray)",[["continuous-subarray-sum","M"],["find-two-non-overlapping-sub-arrays-each-with-target-sum","M"],["maximum-number-of-non-overlapping-subarrays-with-sum-equals-target","M"]]],
+["DP + Alpha (Tricks / DS)",[["arithmetic-slices-ii-subsequence","H"],["odd-even-jump","H"],["constrained-subsequence-sum","H"],["delivering-boxes-from-storage-to-ports","H"],["trapping-rain-water","H"]]],
+["Insertion DP",[["k-inverse-pairs-array","H"]]],
+["Graph DP",[["cheapest-flights-within-k-stops","M"],["find-the-shortest-superstring","H"]]],
+["Memoization",[["minimum-jumps-to-reach-home","M"],["scramble-string","H"],["tiling-a-rectangle-with-the-fewest-squares","H"],["number-of-ways-to-stay-in-the-same-place-after-some-steps","H"],["jump-game-v","H"],["minimum-number-of-days-to-eat-n-oranges","H"]]],
+["Binary Lifting",[["kth-ancestor-of-a-tree-node","H"]]],
+["Math",[["ugly-number-ii","M"],["count-sorted-vowel-strings","M"],["race-car","H"],["super-egg-drop","H"],["least-operators-to-express-number","H"],["largest-multiple-of-three","M"],["minimum-one-bit-operations-to-make-integers-zero","H"]]]
+];
+
+const ROMANS = new Set(["i","ii","iii","iv","v","vi","vii","viii","ix","x"]);
+const LOWER = new Set(["a","an","the","to","and","of","in","with","for","from","at","on","is","as","or","by"]);
+const DIFF_NAME = {E:"Easy",M:"Medium",H:"Hard"};
+
+function titleFromSlug(slug){
+  return slug.split("-").map((w,i)=>{
+    if(ROMANS.has(w)) return w.toUpperCase();
+    if(/^\d/.test(w)) return w.toUpperCase();
+    if(i>0 && LOWER.has(w)) return w;
+    return w.charAt(0).toUpperCase()+w.slice(1);
+  }).join(" ");
+}
+
+const STORAGE_PREFIX = "dp-sheet:";
+let checkedState = {};
+let currentDiff = "ALL";
+let currentSearch = "";
+
+async function loadState(){
+  try{
+    const res = await window.storage.list(STORAGE_PREFIX, false);
+    if(res && res.keys){
+      for(const k of res.keys){
+        try{
+          const item = await window.storage.get(k, false);
+          if(item && item.value === "1") checkedState[k.slice(STORAGE_PREFIX.length)] = true;
+        }catch(e){}
+      }
+    }
+  }catch(e){ console.warn("storage list failed", e); }
+  render();
+}
+
+async function toggle(slug){
+  const isChecked = !!checkedState[slug];
+  checkedState[slug] = !isChecked;
+  try{
+    if(!isChecked){
+      await window.storage.set(STORAGE_PREFIX+slug, "1", false);
+    } else {
+      await window.storage.delete(STORAGE_PREFIX+slug, false);
+    }
+  }catch(e){ console.warn("storage write failed", e); }
+  render();
+}
+
+const DIFF_COLOR = {E:"var(--easy)",M:"var(--medium)",H:"var(--hard)"};
+const CIRC = 2 * Math.PI * 44; // 276.46
+
+function updateDonut(byDiff){
+  const total = byDiff.E.total + byDiff.M.total + byDiff.H.total;
+  const doneTotal = byDiff.E.done + byDiff.M.done + byDiff.H.done;
+
+  let offset = 0;
+  [["segEasy","E"],["segMedium","M"],["segHard","H"]].forEach(([id,key])=>{
+    const done = byDiff[key].done;
+    const len = total ? (done/total) * CIRC : 0;
+    const el = document.getElementById(id);
+    el.setAttribute("stroke-dasharray", len.toFixed(2) + " " + CIRC.toFixed(2));
+    el.setAttribute("stroke-dashoffset", (-offset).toFixed(2));
+    offset += len;
+  });
+
+  document.getElementById("donutPct").textContent = total ? Math.round((doneTotal/total)*100) + "%" : "0%";
+
+  const legend = document.getElementById("legend");
+  const remaining = total - doneTotal;
+  legend.innerHTML = [
+    ["E","Easy"], ["M","Medium"], ["H","Hard"]
+  ].map(([key,label])=>`
+    <div class="legend-row">
+      <div class="legend-swatch" style="background:${DIFF_COLOR[key]}"></div>
+      <div class="legend-label">${label}</div>
+      <div class="legend-count">${byDiff[key].done}/${byDiff[key].total}</div>
+    </div>`).join("") + `
+    <div class="legend-row">
+      <div class="legend-swatch" style="background:var(--line-soft);border:1px solid var(--line);"></div>
+      <div class="legend-label">Remaining</div>
+      <div class="legend-count">${remaining}</div>
+    </div>`;
+}
+
+function render(){
+  let totalDone = 0, totalCount = 0;
+  const byDiff = {E:{done:0,total:0}, M:{done:0,total:0}, H:{done:0,total:0}};
+  const container = document.getElementById("categories");
+  container.innerHTML = "";
+
+  DATA.forEach(([name, problems], catIdx)=>{
+    const filtered = problems.filter(([slug, diff])=>{
+      if(currentDiff !== "ALL" && diff !== currentDiff) return false;
+      if(currentSearch && !titleFromSlug(slug).toLowerCase().includes(currentSearch)) return false;
+      return true;
+    });
+    const done = problems.filter(([slug])=>checkedState[slug]).length;
+    totalDone += done; totalCount += problems.length;
+    problems.forEach(([slug, diff])=>{
+      byDiff[diff].total += 1;
+      if(checkedState[slug]) byDiff[diff].done += 1;
+    });
+
+    if(filtered.length === 0 && (currentSearch || currentDiff !== "ALL")) return;
+
+    const catEl = document.createElement("div");
+    catEl.className = "category" + (catIdx===0 ? " open" : "");
+
+    const pct = problems.length ? (done/problems.length)*100 : 0;
+    catEl.innerHTML = `
+      <div class="cat-header">
+        <div class="cat-index">${String(catIdx+1).padStart(2,"0")}</div>
+        <div class="cat-name">${name}</div>
+        <div class="cat-bar"><i style="width:${pct}%"></i></div>
+        <div class="cat-count">${done}/${problems.length}</div>
+        <div class="chevron">▶</div>
+      </div>
+      <div class="cat-body"></div>
+    `;
+    const body = catEl.querySelector(".cat-body");
+
+    if(filtered.length === 0){
+      body.innerHTML = '<div class="empty-msg">No problems match your filters in this category.</div>';
+    } else {
+      filtered.forEach(([slug, diff])=>{
+        const row = document.createElement("div");
+        row.className = "row" + (checkedState[slug] ? " done" : "");
+        row.innerHTML = `
+          <div class="checkbox ${checkedState[slug] ? "checked" : ""}"></div>
+          <a class="title" href="https://leetcode.com/problems/${slug}/" target="_blank" rel="noopener">${titleFromSlug(slug)}</a>
+          <div class="tag ${diff}">${DIFF_NAME[diff]}</div>
+        `;
+        row.querySelector(".checkbox").addEventListener("click",(e)=>{
+          e.stopPropagation();
+          toggle(slug);
+        });
+        body.appendChild(row);
+      });
+    }
+
+    catEl.querySelector(".cat-header").addEventListener("click",()=>{
+      catEl.classList.toggle("open");
+    });
+
+    container.appendChild(catEl);
+  });
+
+  updateDonut(byDiff);
+}
+
+document.getElementById("search").addEventListener("input",(e)=>{
+  currentSearch = e.target.value.trim().toLowerCase();
+  render();
+});
+
+document.querySelectorAll(".chip").forEach(chip=>{
+  chip.addEventListener("click",()=>{
+    document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+    chip.classList.add("active");
+    currentDiff = chip.dataset.diff;
+    render();
+  });
+});
+
+loadState();
+</script>
+</body>
+</html>
