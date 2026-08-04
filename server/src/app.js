@@ -39,16 +39,12 @@ app.get("/", (req, res) => {
   res.send("AlgoAtlas Backend Running ✅");
 });
 
-// Serve Frontend in Production
-if (process.env.NODE_ENV === "production") {
-  const __dirname = path.dirname(fileURLToPath(import.meta.url));
-  const buildPath = path.join(__dirname, "../../client/dist");
-  
-  app.use(express.static(buildPath));
-
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(buildPath, "index.html"));
+// Catch-all 404 handler for undefined routes
+app.use((req, res) => {
+  return res.status(404).json({
+    success: false,
+    message: "Route not found",
   });
-}
+});
 
 export default app;
