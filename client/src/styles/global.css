@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@600;700;800&display=swap');
+@import './variables.css';
+@import '../index.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg, #08090f);
+  color: var(--text-hi, #f1f2f6);
+  font-family: var(--font-display, 'Inter', sans-serif);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 900px 500px at 15% -10%, rgba(124,127,245,0.16), transparent 60%),
+    radial-gradient(ellipse 700px 500px at 100% 10%, rgba(52,211,153,0.06), transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.wrap {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 0 24px;
+  position: relative;
+  z-index: 1;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ── Auth loading spinner (used by ProtectedRoute) ───────────────────────── */
+.auth-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(124, 127, 245, 0.2);
+  border-top-color: #7c7ff5;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+/* ── Inline spinner for Google button ────────────────────────────────────── */
+.btn-google-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(8, 9, 15, 0.25);
+  border-top-color: #08090f;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

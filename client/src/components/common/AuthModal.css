@@ -1,0 +1,135 @@
+.auth-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(8, 9, 15, 0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.auth-modal-content {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.7);
+  color: var(--text-hi);
+  text-align: center;
+  animation: slideUp 0.2s ease-out;
+}
+
+.auth-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.auth-modal-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-hi);
+}
+
+.auth-modal-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.auth-modal-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: var(--accent-glow);
+  border: 1px solid rgba(139, 157, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  box-shadow: 0 0 16px var(--accent-glow);
+}
+
+.auth-modal-header h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-hi);
+}
+
+.auth-modal-message {
+  font-size: 14.5px;
+  color: var(--text-mid);
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+
+.auth-modal-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.auth-modal-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.auth-modal-btn.primary {
+  background: var(--accent);
+  color: #08090f;
+  border: none;
+  font-weight: 700;
+}
+
+.auth-modal-btn.primary:hover {
+  opacity: 0.9;
+  box-shadow: 0 0 16px var(--accent-glow);
+}
+
+.auth-modal-btn.secondary {
+  background: var(--bg);
+  color: var(--text-hi);
+  border: 1px solid var(--line);
+}
+
+.auth-modal-btn.secondary:hover {
+  background: var(--panel-hover);
+  border-color: var(--accent-dim);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
