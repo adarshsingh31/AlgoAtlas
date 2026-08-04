@@ -40,7 +40,7 @@ export function NavBar({ activeTab, setActiveTab, sheetStats }) {
           <div className="brand-icon-wrap">
             <Flame size={20} className="brand-icon" />
           </div>
-          <span className="brand-title">Nahi Kar Paoge</span>
+          <span className="brand-title">AlgoAtlas</span>
         </div>
 
         <button
