@@ -13,9 +13,9 @@ import * as authService from "../services/authService.js";
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser]       = useState(null);
-  const [token, setToken]     = useState(authService.getStoredToken);
-  const [loading, setLoading] = useState(true); // true until we've checked localStorage
+  const [user, setUser]       = useState(() => authService.getStoredUser());
+  const [token, setToken]     = useState(() => authService.getStoredToken());
+  const [loading, setLoading] = useState(false);
 
   // ── Restore session on page load ─────────────────────────────────────────
   useEffect(() => {
@@ -33,6 +33,7 @@ export const AuthProvider = ({ children }) => {
         if (data.success) {
           setUser(data.user);
           setToken(storedToken);
+          authService.saveAuthData({ token: storedToken, user: data.user });
         } else {
           // Token is invalid / expired — clear it
           authService.clearAuthData();

@@ -7,7 +7,7 @@ import './Login.css';
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, googleLogin, isAuthenticated, loading: authLoading } = useAuth();
+  const { login, googleLogin } = useAuth();
 
   const redirectTarget = (location.state?.from && location.state?.from !== '/') ? location.state.from : '/questions';
 
@@ -16,13 +16,6 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [status, setStatus] = useState({ message: '', type: '' });
-
-  // Redirect authenticated users away from the login page to their target destination
-  useEffect(() => {
-    if (!authLoading && isAuthenticated) {
-      navigate(redirectTarget, { replace: true });
-    }
-  }, [isAuthenticated, authLoading, navigate, redirectTarget]);
 
   // ── Email / Password Login ─────────────────────────────────────────────────
   const handleLogin = async (e) => {
@@ -79,9 +72,6 @@ const Login = () => {
     setStatus({ message, type: 'error' });
     setGoogleLoading(false);
   };
-
-  // Show nothing while auth is resolving on first load
-  if (authLoading) return null;
 
   return (
     <div className="login-page">

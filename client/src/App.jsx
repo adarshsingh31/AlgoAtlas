@@ -10,7 +10,7 @@ import Settings from './pages/Settings/Settings';
 import { AuthProvider } from './context/AuthContext';
 import { ProgressProvider } from './context/ProgressContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
-
+import PublicRoute from './components/common/PublicRoute';
 function App() {
   const location = useLocation();
   const showNavbarFooter = location.pathname === '/';
@@ -20,17 +20,17 @@ function App() {
       <ProgressProvider>
         {showNavbarFooter && <Navbar />}
         <Routes>
-          {/* Public & sheet routes (anonymous browsing allowed) */}
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/questions" element={<Dashboard />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/dp" element={<Dashboard defaultTab="dp" />} />
-          <Route path="/tree" element={<Dashboard defaultTab="tree" />} />
-          <Route path="/graph" element={<Dashboard defaultTab="graph" />} />
-
+          {/* Public routes (redirect to questions if authenticated) */}
+          <Route path="/" element={<PublicRoute><Home /></PublicRoute>} />
+          <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+          <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
+          
           {/* Protected routes */}
+          <Route path="/questions" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/dp" element={<ProtectedRoute><Dashboard defaultTab="dp" /></ProtectedRoute>} />
+          <Route path="/tree" element={<ProtectedRoute><Dashboard defaultTab="tree" /></ProtectedRoute>} />
+          <Route path="/graph" element={<ProtectedRoute><Dashboard defaultTab="graph" /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
         </Routes>
         {showNavbarFooter && <Footer />}

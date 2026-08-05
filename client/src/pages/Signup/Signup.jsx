@@ -7,7 +7,7 @@ import './Signup.css';
 const Signup = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { register, googleLogin, isAuthenticated, loading: authLoading } = useAuth();
+  const { register, googleLogin } = useAuth();
 
   const redirectTarget = (location.state?.from && location.state?.from !== '/') ? location.state.from : '/questions';
 
@@ -19,13 +19,6 @@ const Signup = () => {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [status, setStatus] = useState({ message: '', type: '' });
-
-  // Redirect authenticated users away from the signup page
-  useEffect(() => {
-    if (!authLoading && isAuthenticated) {
-      navigate(redirectTarget, { replace: true });
-    }
-  }, [isAuthenticated, authLoading, navigate, redirectTarget]);
 
   // ── Email / Password Registration ─────────────────────────────────────────
   const handleSignup = async (e) => {
@@ -91,9 +84,6 @@ const Signup = () => {
     setStatus({ message, type: 'error' });
     setGoogleLoading(false);
   };
-
-  // Show nothing while auth is resolving on first load
-  if (authLoading) return null;
 
   return (
     <div className="signup-page">

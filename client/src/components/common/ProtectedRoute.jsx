@@ -10,23 +10,7 @@ import { Navigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth.js";
 
 export default function ProtectedRoute({ children }) {
-  const { isAuthenticated, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "#08090f",
-        }}
-      >
-        <div className="auth-spinner" />
-      </div>
-    );
-  }
+  const { isAuthenticated } = useAuth();
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
